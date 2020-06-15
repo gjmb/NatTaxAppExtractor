@@ -406,12 +406,12 @@ public class TaxExtractor2 {
                                         continue;
                                     }
                                     //TARIFA
-                                } else if (lineList.contains(taxesNames[0]) || lineList.contains(taxesNames[1]) || lineList.contains(taxesNames[2])
+                                } else if ((lineList.contains(taxesNames[0]) || lineList.contains(taxesNames[1]) || lineList.contains(taxesNames[2])
                                         || lineList.contains(taxesNames[3]) || lineList.contains(taxesNames[4]) || lineList.contains(taxesNames[5])
                                         || lineList.contains(taxesNames[6])
                                         || ToplineList.contains(taxesNames[0]) || ToplineList.contains(taxesNames[1]) || ToplineList.contains(taxesNames[2])
                                         || ToplineList.contains(taxesNames[3]) || ToplineList.contains(taxesNames[4]) || ToplineList.contains(taxesNames[5])
-                                        || ToplineList.contains(taxesNames[6])) {
+                                        || ToplineList.contains(taxesNames[6])) && !lineList.contains("CHEQUE")) {
                                     v = lineFrag[lineFrag.length - 2].replace("-", "");
                                     //System.out.println(date+" "+v);
                                     cond.taxDate.add(date);
