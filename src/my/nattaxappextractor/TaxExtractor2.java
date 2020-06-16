@@ -125,17 +125,17 @@ public class TaxExtractor2 {
                         if (j == 0) {
                             date = c.taxDate.get(j);
                             value = value + c.taxValue.get(j).replace(".", "");
-                            sum = sum + c.taxValue.get(j).replace(".", "");;
+                            sum = sum + c.taxValue.get(j).replace(".", "");
                         } else {
                             //System.out.println(date+" "+value.replace(".", ","));
                             StrW.write(date + ";" + value + "\n");
                             date = c.taxDate.get(j);
                             value = "=" + c.taxValue.get(j).replace(".", "");
-                            sum = sum + "+" + c.taxValue.get(j).replace(".", "");;
+                            sum = sum + "+" + c.taxValue.get(j).replace(".", "");
                         }
                     } else {
                         value = value + "+" + c.taxValue.get(j).replace(".", "");
-                        sum = sum + "+" + c.taxValue.get(j).replace(".", "");;
+                        sum = sum + "+" + c.taxValue.get(j).replace(".", "");
                     }
                 }
                 //System.out.println(date+" "+value.replace(".", ","));
@@ -267,7 +267,7 @@ public class TaxExtractor2 {
                                     v = v.replace(",", ".");
                                     if (Double.valueOf(v) < 0) {
                                         cond.debitEntry.add(new Entry(lines[j]));
-                                        j++;
+                                        j++;   
                                         continue;
                                     }
                                 } else if (lineList.contains(credit[0]) || lineList.contains(credit[1])) {
