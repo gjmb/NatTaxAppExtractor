@@ -202,7 +202,7 @@ public class NatTaxAppExtractorUI extends javax.swing.JFrame {
         try {
             condMap = TaxExtractor2.extractor(jTextField1.getText(), jTextField2.getText(), (String) jComboBox2.getSelectedItem());
                condMapG  = ExcelReader.extractor(jTextField4.getText());
-               Conciliator.checker(condMap, condMapG, jTextField2.getText());
+               ConciliatorV2.checker(condMap, condMapG, jTextField2.getText());
         } catch (IOException ex) {
             Logger.getLogger(NatTaxAppExtractorUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (DocumentException ex) {

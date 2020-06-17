@@ -49,7 +49,7 @@ public class ConciliatorV2 {
                     String[] entryContentG = g.debitEntry.get(j).content.split(" ");
                     List<String> lG = Arrays.asList(entryContentG);
                     if (lG.contains("CH")) {
-                        if (lG.contains(entryContent[entryContent.length - 4])) {
+                        if (lG.contains(entryContent[entryContent.length - 3])) {
                             //System.out.println("    "+g.debitEntry.get(j).content);
                             if (lG.contains(entryContent[0])) {
                                 ep.entry.errorType = 0;
@@ -110,227 +110,6 @@ public class ConciliatorV2 {
 
         return round(total, 2);
     } // creditTotal
-
-    public static void wageTotal(Condominium c, double[] wage, String[] dtW, String[] dtA, ArrayList<EntryPair> p) {
-        String[] w = null;
-        String[] a = null;
-        for (int i = 0; i < c.debitEntry.size(); i++) {
-            String[] entryContent = c.debitEntry.get(i).content.split(" ");
-            List<String> l = Arrays.asList(entryContent);
-            String v = entryContent[entryContent.length - 2].replace(".", "");
-            v = v.replace(",", ".");
-            if (v.charAt(v.length() - 1) == '0') {
-                v = v.substring(0, v.length() - 1);
-            }
-            String[] dt = entryContent[0].split("/");
-
-            if (l.contains("PAGAMENTO") && l.contains("FUNCIONARIOS")) {
-                if (Integer.parseInt(dt[0]) <= 10) {
-                    c.debitEntry.get(i).errorType = 0;
-                    dtW[0] = entryContent[0];
-                    //System.out.println("dtW: " + dtW[0]);
-                    w = entryContent;
-                    wage[0] = round(round(wage[0], 2) + round(Double.parseDouble(v), 2), 2);
-                } else {
-                    c.debitEntry.get(i).errorType = 0;
-                    dtA[0] = entryContent[0];
-                    a = entryContent;
-                    wage[1] = round(round(wage[1], 2) + round(Double.parseDouble(v), 2), 2);
-                }
-            } // if l.contains("PAGAMENTO") && l.contains("FUNCIONARIOS")
-        } // for int i = 0; i < c.debitEntry.size(); i++
-        if (w == null) {
-            return;
-        }
-        w[w.length - 2] = Double.toString(wage[0]);
-        if (a != null) {
-            a[a.length - 2] = Double.toString(wage[1]);
-        }
-        String wContent = "";
-        String aContent = "";
-        for (int i = 0; i < w.length; i++) {
-            wContent = wContent + w[i] + " ";
-        }
-        if (a != null) {
-            for (int i = 0; i < a.length; i++) {
-                aContent = aContent + a[i] + " ";
-            }
-        }
-        p.add(new EntryPair(new Entry(wContent)));
-        if (a != null) {
-            p.add(new EntryPair(new Entry(aContent)));
-        }
-
-    } // wageTotal
-
-    public static void wageFinder(CondominiumG g, Condominium c, double[] wageDif, double[] wage, ArrayList<EntryPair> p) {
-        String[] dtW = {""};
-        String[] dtA = {""};
-        ArrayList<EntryPair> Adv = new ArrayList<>();
-
-        //Busca por pagamentos de salario individuais 
-        for (int i = 0; i < g.debitEntry.size(); i++) {
-            String[] entryContentG = g.debitEntry.get(i).content.split(" ");
-            List<String> l = Arrays.asList(entryContentG);
-            if (l.contains("SALDO") && l.contains("00000167") && g.debitEntry.get(i).errorType == -1) {
-                String vG = entryContentG[entryContentG.length - 3];
-                for (Entry debitEntry : c.debitEntry) {
-                    String[] entryContent = debitEntry.content.split(" ");
-                    List<String> l2 = Arrays.asList(entryContent);
-                    String v = entryContent[entryContent.length - 2].replace(".", "");
-                    v = v.replace(",", ".");
-                    if (v.charAt(v.length() - 1) == '0') {
-                        v = v.substring(0, v.length() - 1);
-                    }
-                    if (vG.equals(v)) {
-                        if (l2.contains(entryContentG[entryContentG.length - 4])) {
-                            EntryPair ep = new EntryPair(new Entry(debitEntry.content));
-                            Entry e = new Entry(g.debitEntry.get(i).content);
-                            if (l2.contains(entryContentG[1])) {
-                                ep.entry.errorType = 0;
-                                e.errorType = 0;
-                            } else {
-                                ep.entry.errorType = 1;
-                                e.errorType = 1;
-                            }
-
-                            ep.pair.add(e);
-                            p.add(ep);
-                            g.debitEntry.get(i).errorType = 0;
-                            debitEntry.errorType = 0;
-                            break;
-                        }
-                    }// if vG.equals(v)   
-                }// for Entry debitEntry : c.debitEntry
-                //Busca por pagamentos de salario individuais
-            } else if (l.contains("ADTO.") && l.contains("00000167") && g.debitEntry.get(i).errorType == -1) {
-                String vG = entryContentG[entryContentG.length - 3];
-                for (Entry debitEntry : c.debitEntry) {
-                    String[] entryContent = debitEntry.content.split(" ");
-                    List<String> l2 = Arrays.asList(entryContent);
-                    String v = entryContent[entryContent.length - 2].replace(".", "");
-                    v = v.replace(",", ".");
-                    if (v.charAt(v.length() - 1) == '0') {
-                        v = v.substring(0, v.length() - 1);
-                    }
-                    if (vG.equals(v)) {
-                        if (l2.contains(entryContentG[entryContentG.length - 4])) {
-                            EntryPair ep = new EntryPair(new Entry(debitEntry.content));
-                            Entry e = new Entry(g.debitEntry.get(i).content);
-                            if (l2.contains(entryContentG[1])) {
-                                ep.entry.errorType = 0;
-                                e.errorType = 0;
-                            } else {
-                                ep.entry.errorType = 1;
-                                e.errorType = 1;
-                            }
-                            ep.pair.add(e);
-                            Adv.add(ep);
-                            g.debitEntry.get(i).errorType = 0;
-                            debitEntry.errorType = 0;
-                            break;
-                        }
-                    }// if vG.equals(v)   
-                }// for Entry debitEntry : c.debitEntry
-            }// else if
-        } // for (int i = 0; i < g.debitEntry.size(); i++)  
-        wageTotal(c, wage, dtW, dtA, p);
-        if (p.isEmpty()) {
-            return;
-        }
-        if (wage[0] == 0.0) {
-            p.removeAll(p);
-            return;
-        }
-        EntryPair ep = null;
-        //TODO: ARRUMAR 
-        for (int i = 0; i < p.size(); i++) {
-            String[] entryContent = p.get(i).entry.content.split(" ");
-            //System.out.println("dtW: " + dtW[0] + " " + p.get(i).entry.content);
-            List<String> l = Arrays.asList(entryContent);
-            if (l.contains("PAGAMENTO") && l.contains("FUNCIONARIOS") && l.contains(dtW[0])) {
-                ep = p.get(i);
-                break;
-            }
-        }
-
-        for (int i = 0; i < g.debitEntry.size(); i++) {
-            String[] entryContentG = g.debitEntry.get(i).content.split(" ");
-            List<String> l = Arrays.asList(entryContentG);
-            if (l.contains("SALDO") && l.contains("00000167") && g.debitEntry.get(i).errorType == -1) {
-                g.debitEntry.get(i).errorType = 0;
-                String vG = entryContentG[entryContentG.length - 3];
-                wageDif[0] = round(round(wageDif[0], 2) + round(Double.parseDouble(vG), 2), 2);
-                Entry e = new Entry(g.debitEntry.get(i).content);
-                ep.pair.add(e);
-            }
-        }// for (int i = 0; i < g.debitEntry.size(); i++)
-        wageDif[0] = round(round(wageDif[0], 2) - round(wage[0], 2), 2);
-        if (wageDif[0] == 0.0) {
-            ep.entry.errorType = 0;
-            for (int i = 0; i < ep.pair.size(); i++) {
-                String[] entryContent = ep.pair.get(i).content.split(" ");
-
-                List<String> l = Arrays.asList(entryContent);
-                if (l.contains(dtW[0])) {
-                    ep.pair.get(i).errorType = 0;
-                } else {
-                    ep.pair.get(i).errorType = 1;
-                    ep.entry.errorType = 1;
-                }
-
-            }
-
-        }
-
-        if (Adv.isEmpty()) {
-            return;
-        }
-
-        for (int i = 0; i < Adv.size(); i++) {
-            p.add(Adv.get(i));
-        }
-
-        for (int i = 0; i < p.size(); i++) {
-            String[] entryContent = p.get(i).entry.content.split(" ");
-            //System.out.println("dtW: " + dtW[0] + " " + p.get(i).entry.content);
-            List<String> l = Arrays.asList(entryContent);
-            if (l.contains("PAGAMENTO") && l.contains("FUNCIONARIOS") && l.contains(dtA[0])) {
-                ep = p.get(i);
-                break;
-            }
-        }
-
-        for (int i = 0; i < g.debitEntry.size(); i++) {
-            String[] entryContentG = g.debitEntry.get(i).content.split(" ");
-            List<String> l = Arrays.asList(entryContentG);
-            if (l.contains("ADTO.") && l.contains("00000167") && g.debitEntry.get(i).errorType == -1) {
-                g.debitEntry.get(i).errorType = 0;
-                String vG = entryContentG[entryContentG.length - 3];
-                wageDif[1] = round(round(wageDif[1], 2) + round(Double.parseDouble(vG), 2), 2);
-                Entry e = new Entry(g.debitEntry.get(i).content);
-                ep.pair.add(e);
-            }
-        }// for (int i = 0; i < g.debitEntry.size(); i++)
-        wageDif[1] = round(round(wageDif[1], 2) - round(wage[1], 2), 2);
-        if (wageDif[1] == 0.0) {
-            ep.entry.errorType = 0;
-            for (int i = 0; i < ep.pair.size(); i++) {
-                String[] entryContent = ep.pair.get(i).content.split(" ");
-
-                List<String> l = Arrays.asList(entryContent);
-                if (l.contains(dtA[0])) {
-                    ep.pair.get(i).errorType = 0;
-                } else {
-                    ep.pair.get(i).errorType = 1;
-                    ep.entry.errorType = 1;
-                }
-            }
-
-        }
-
-    }// public static void wageFinder
-    //TODO: TESTAR wageFinder
 
     public static void checker(Map<String, Condominium> condMap, Map<String, CondominiumG> condMapG, String dest) {
         dest = dest.replace("\\", "/");
@@ -430,6 +209,7 @@ public class ConciliatorV2 {
                         String[] entryContent = c.debitEntry.get(i).content.split(" ");
                         String v = entryContent[entryContent.length - 2].replace(".", "");
                         v = v.replace(",", ".");
+                        v = v.replace("-", "");
                         if (v.charAt(v.length() - 1) == '0') {
                             v = v.substring(0, v.length() - 1);
                         }
@@ -462,6 +242,7 @@ public class ConciliatorV2 {
                         String[] entryContent = checkPair.get(i).entry.content.split(" ");
                         v = entryContent[entryContent.length - 2].replace(".", "");
                         v = v.replace(",", ".");
+                        v = v.replace("-", "");
                         if (v.charAt(v.length() - 1) == '0') {
                             v = v.substring(0, v.length() - 1);
                         }
@@ -645,120 +426,7 @@ public class ConciliatorV2 {
                 /////////////////////////////////////////////
                 ///////      Verifica os cheques    ////////
                 ///////////////////////////////////////////
-                /////////////////////////////////////////////
-                ///////     Verifica os salarios    ////////
-                ///////////////////////////////////////////
-                List<String> condKeysWage = Arrays.asList(new String[]{"0001", "0003", "0004", "0005", "0015", "0022",
-                    "0023", "0027", "0028", "0029", "0033", "0037",
-                    "0038", "0039", "0041", "0045", "0048", "0049",
-                    "0050", "0051", "0056", "0057", "0061"});
-
-                if (condKeysWage.contains(ExcelReader.condKeysG[index])) {
-
-                    double[] wageDif = {0.0, 0.0};
-                    double[] wage = {0.0, 0.0};
-                    ArrayList<EntryPair> w = new ArrayList<>();
-
-                    wageFinder(g, c, wageDif, wage, w);
-
-                    // System.out.println("wage: " + wage[0]);
-                    //System.out.println("wageDif:  " + wageDif[0]);
-                    boolean findWageProblem = false;
-                    for (int i = 0; i < w.size(); i++) {
-                        if (w.get(i).entry.errorType != 0) {
-                            if (!findWageProblem) {
-                                p = new Paragraph(new Phrase(lineSpacing, "                ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                p = new Paragraph(new Phrase(lineSpacing, "     PAGAMENTO(S) FUNCIONARIO(S) ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                p = new Paragraph(new Phrase(lineSpacing, "                ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                findWageProblem = true;
-                            }
-                            String[] entryContent = w.get(i).entry.content.split(" ");
-                            List<String> l = Arrays.asList(entryContent);
-                            String[] dt = entryContent[0].split("/");
-
-                            //System.out.println(w.get(i).entry.content + " "+  dt.length + " "+ dt[0]);
-                            if (w.get(i).entry.errorType == -1 && wageDif[0] != 0 && Integer.parseInt(dt[0]) <= 10 && w.get(i).pair.size() > 0) {
-
-                                p = new Paragraph(new Phrase(lineSpacing, "         PAGAMENTO(S) DE SALDO SALARIO BAIXADO(S) COM DIFERENCA DE VALOR ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                p = new Paragraph(new Phrase(lineSpacing, "               DIFERENCA: " + round(Math.abs(wageDif[0]), 2), FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                f1.setColor(BaseColor.RED);
-                                p = new Paragraph(new Phrase(lineSpacing, "               " + w.get(i).entry.content, f1));
-                                document.add(p);
-                                for (int j = 0; j < w.get(i).pair.size(); j++) {
-                                    String[] entryContent1 = w.get(i).pair.get(j).content.split(" ");
-                                    List<String> l2 = Arrays.asList(entryContent1);
-                                    if (!l2.contains(entryContent[0]) && j == 0) {
-                                        p = new Paragraph(new Phrase(lineSpacing, "               VERIFICAR DATA DA(S) BAIXA(S)" + round(Math.abs(wageDif[0]), 2), FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                        document.add(p);
-                                    }
-                                    p = new Paragraph(new Phrase(lineSpacing, "                 " + w.get(i).pair.get(j).content, f1));
-                                    document.add(p);
-                                }
-                            } else if (w.get(i).entry.errorType == -1 && (wageDif[0] == 0 || (wageDif[0] != 0 && w.get(i).pair.isEmpty())) && Integer.parseInt(dt[0]) <= 10) {
-                                p = new Paragraph(new Phrase(lineSpacing, "         PAGAMENTO(S) DE SALDO SALARIO NAO LANCADO(S) OU NAO BAIXADO(S)", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                f1.setColor(BaseColor.RED);
-                                p = new Paragraph(new Phrase(lineSpacing, "               " + w.get(i).entry.content, f1));
-                                document.add(p);
-                            } else if (w.get(i).entry.errorType == 1 && wageDif[0] == 0 && Integer.parseInt(dt[0]) <= 10) {
-                                p = new Paragraph(new Phrase(lineSpacing, "         PAGAMENTO(S) DE SALDO SALARIO BAIXADO(S) NA DATA ERRADA ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                f1.setColor(BaseColor.RED);
-                                p = new Paragraph(new Phrase(lineSpacing, "               " + w.get(i).entry.content, f1));
-                                document.add(p);
-                                for (int j = 0; j < w.get(i).pair.size(); j++) {
-                                    p = new Paragraph(new Phrase(lineSpacing, "                 " + w.get(i).pair.get(j).content, f1));
-                                    document.add(p);
-                                }
-                            } else if (w.get(i).entry.errorType == -1 && wageDif[1] != 0 && Integer.parseInt(dt[0]) > 10 && w.get(i).pair.size() > 0) {
-                                p = new Paragraph(new Phrase(lineSpacing, "         PAGAMENTO(S) DE ADTO. SALARIO BAIXADO(S) COM DIFERENCA DE VALOR ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                p = new Paragraph(new Phrase(lineSpacing, "               DIFERENCA: " + round(Math.abs(wageDif[1]), 2), FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                f1.setColor(BaseColor.RED);
-                                p = new Paragraph(new Phrase(lineSpacing, "               " + w.get(i).entry.content, f1));
-                                document.add(p);
-                                for (int j = 0; j < w.get(i).pair.size(); j++) {
-                                    String[] entryContent1 = w.get(i).pair.get(j).content.split(" ");
-                                    List<String> l2 = Arrays.asList(entryContent1);
-                                    if (!l2.contains(entryContent[0]) && j == 0) {
-                                        p = new Paragraph(new Phrase(lineSpacing, "               VERIFICAR DATA DA(S) BAIXA(S)" + round(Math.abs(wageDif[0]), 2), FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                        document.add(p);
-                                    }
-                                    p = new Paragraph(new Phrase(lineSpacing, "                 " + w.get(i).pair.get(j).content, f1));
-                                    document.add(p);
-                                }
-                            } else if (w.get(i).entry.errorType == -1 && (wageDif[1] == 0 || (wageDif[1] != 0 && w.get(i).pair.isEmpty())) && Integer.parseInt(dt[0]) > 10) {
-                                p = new Paragraph(new Phrase(lineSpacing, "         PAGAMENTO(S) DE ADTO. SALARIO NAO LANCADO(S) OU NAO BAIXADO(S)", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                f1.setColor(BaseColor.RED);
-                                p = new Paragraph(new Phrase(lineSpacing, "               " + w.get(i).entry.content, f1));
-                                document.add(p);
-                            } else if (w.get(i).entry.errorType == 1 && wageDif[1] == 0 && Integer.parseInt(dt[0]) > 10) {
-                                p = new Paragraph(new Phrase(lineSpacing, "         PAGAMENTO(S) DE ADTO. SALARIO BAIXADO(S) NA DATA ERRADA ", FontFactory.getFont(FontFactory.TIMES_ROMAN, fntSize)));
-                                document.add(p);
-                                f1.setColor(BaseColor.RED);
-                                p = new Paragraph(new Phrase(lineSpacing, "               " + w.get(i).entry.content, f1));
-                                document.add(p);
-                                for (int j = 0; j < w.get(i).pair.size(); j++) {
-                                    p = new Paragraph(new Phrase(lineSpacing, "                 " + w.get(i).pair.get(j).content, f1));
-                                    document.add(p);
-                                }
-                            }
-
-                        }
-                        //System.out.println("wage: " + wage[1]);
-                        //System.out.println("wageDif:  " + wageDif[1]);
-                    }
-                }
-                /////////////////////////////////////////////
-                ///////     Verifica os salarios    ////////
-                ///////////////////////////////////////////
+                
                 /////////////////////////////////////////////
                 ///////verifica diferenca de debitos////////
                 ///////////////////////////////////////////
