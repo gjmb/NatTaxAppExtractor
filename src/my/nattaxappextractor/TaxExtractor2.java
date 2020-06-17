@@ -362,7 +362,7 @@ public class TaxExtractor2 {
                             //IF dateSplit.length==3
                             //CASO LINHA SEM DATA ?QUEBRADA?
                         } else {
-
+                      
                             if (isNumeric(lineFrag[lineFrag.length - 1])) {
                                 String[] topRowFrag = null;
                                 if (j == 0) {
@@ -377,11 +377,17 @@ public class TaxExtractor2 {
                                     break;
                                 }
                                 String v = null;
+                                boolean topNotDebit = !(ToplineList.contains(debit[0]) || ToplineList.contains(debit[1]) || ToplineList.contains(debit[2])
+                                        || ToplineList.contains(debit[3]) || ToplineList.contains(debit[4]) || ToplineList.contains(debit[5])
+                                        || ToplineList.contains(debit[6]) || ToplineList.contains(debit[7]));
+                                boolean notDebit = !(lineList.contains(debit[0]) || lineList.contains(debit[1]) || lineList.contains(debit[2])
+                                        || lineList.contains(debit[3]) || lineList.contains(debit[4]) || lineList.contains(debit[5])
+                                        || lineList.contains(debit[6]) || lineList.contains(debit[7]));
                                 //RESGATE: valor negativo
                                 if (lineList.contains(retrieve[0]) || lineList.contains(retrieve[1]) || lineList.contains(retrieve[2])
                                         || ToplineList.contains(retrieve[0]) || ToplineList.contains(retrieve[1]) || ToplineList.contains(retrieve[2])) {
                                     v = lineFrag[lineFrag.length - 2];
-                                    if (!lineList.contains("CHEQUE") && !lineList.contains("GASTOS")) {
+                                    if (topNotDebit && notDebit) {
                                         cond.appRescDate.add(date);
                                         cond.appRescValue.add("-" + v);
                                         j++;
@@ -395,7 +401,7 @@ public class TaxExtractor2 {
                                 } else if (lineList.contains(investment[0]) || lineList.contains(investment[1]) || lineList.contains(investment[2])
                                         || ToplineList.contains(investment[0]) || ToplineList.contains(investment[1]) || ToplineList.contains(investment[2])) {
                                     v = lineFrag[lineFrag.length - 2].replace("-", "");
-                                    if (!lineList.contains("CHEQUE") && !lineList.contains("GASTOS")) {
+                                    if (topNotDebit && notDebit) {
                                         cond.appRescDate.add(date);
                                         cond.appRescValue.add(v);
                                         j++;
@@ -411,7 +417,7 @@ public class TaxExtractor2 {
                                         || lineList.contains(taxesNames[6])
                                         || ToplineList.contains(taxesNames[0]) || ToplineList.contains(taxesNames[1]) || ToplineList.contains(taxesNames[2])
                                         || ToplineList.contains(taxesNames[3]) || ToplineList.contains(taxesNames[4]) || ToplineList.contains(taxesNames[5])
-                                        || ToplineList.contains(taxesNames[6])) && !lineList.contains("CHEQUE")) {
+                                        || ToplineList.contains(taxesNames[6])) && topNotDebit && notDebit) {
                                     v = lineFrag[lineFrag.length - 2].replace("-", "");
                                     //System.out.println(date+" "+v);
                                     cond.taxDate.add(date);
